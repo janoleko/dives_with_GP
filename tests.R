@@ -47,7 +47,13 @@ A_end <- A[nrow(A), , drop=FALSE]
 # A_end: vector of length df
 N <- diag(df) - matrix(A_end, ncol=1) %*% (A_end / sum(A_end^2))
 
+# this N matrix projects and vector beta into the null space of A_end
+# hence A %*% N %*% beta has the property that A(1) %*% N %*% beta = 0
+# we absorb the constraint into the design matrix for efficiency later
+
 A <- A %*% N
+
+# as everthing is linear, this is the same for the derivative
 B <- B %*% N
 
 # ---------------------------
