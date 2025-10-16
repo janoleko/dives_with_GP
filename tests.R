@@ -98,7 +98,7 @@ legend("bottomright", legend = c("Depth profile", "Velocity (relative)"),
 
 # creating mesh and finite element matrices
 mesh <- fm_mesh_1d(u * T_dive, boundary = "dirichlet")
-# we can also enforce a boundary condition on the residual, e.g. w(0) = 0, w(T) = 0
+# we can also easily enforce boundary conditions on the residual, e.g. w(0) = 0, w(T) = 0
 spde <- fm_fem(mesh)
 
 # desired GP properties
@@ -120,7 +120,7 @@ plot(u * T_dive, y_mean, type = "l", lwd = 1, col = "steelblue",
 set.seed(123)
 for(i in 1:100) {
   field <- RTMB:::rgmrf0(1, Q)
-  y_sim <- y_mean + c(0, field, 0)
+  y_sim <- y_mean + c(0, field, 0) # boundary conditions -> fixed at 0
   lines(u * T_dive, y_sim, col = "#00000010")
 }
 
