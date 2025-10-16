@@ -41,7 +41,7 @@ B <- bSpline(u, df = df, degree = degree, intercept = TRUE)
 # 'integral = TRUE' makes bSpline return the integrated basis directly
 A <- bSpline(u, df = df, degree = degree, intercept = TRUE, integral = TRUE)
 
-# constraint at the end of the dive
+# we need the constraint y(1) = 0, i.e. A(1) %*% beta = 0
 A_end <- A[nrow(A), , drop=FALSE]
 
 # A_end: vector of length df
