@@ -25,7 +25,7 @@ library(MASS)
 # ---------------------------
 # Dive setup
 # ---------------------------
-T_dive <- 200  # dive duration in seconds (e.g., 10 minutes at 1 Hz sampling)
+T_dive <- 100  # dive duration in seconds (e.g., 10 minutes at 1 Hz sampling)
 u <- seq(0, 1, length.out = T_dive)  # relative time through dive in [0,1]
 
 # ---------------------------
@@ -71,7 +71,7 @@ s <- function(T) T  # default: linear scaling with duration
 # ---------------------------
 # Beta defines the shape of the velocity curve over relative time.
 # Negative coefficients = descent; positive = ascent.
-beta <- c(0, -4, -2, -3, -0.5, 0.5, 2, 0, 0.5, 2)
+beta <- c(-6, -4, -2, -3, -0.5, 0.5, 2, 0, 0.5, 4)
 y0 <- 0  # starting depth (surface)
 
 # Mean depth profile from the ODE solution
@@ -97,19 +97,25 @@ legend("bottomright", legend = c("Depth profile", "Velocity (relative)"),
 # Now sample GP with that mean --------------------------------------------
 
 # creating mesh and finite element matrices
-mesh <- fm_mesh_1d(u, boundary = "dirichlet")
+mesh <- fm_mesh_1d(u * T_dive, boundary = "dirichlet")
+# we can also enforce a boundary condition on the residual, e.g. w(0) = 0, w(T) = 0
 spde <- fm_fem(mesh)
 
-kappa <- 0.1
-tau <- 0.01
+# desired GP properties
+sigma_w <- 0.3         # marginal standard deviation in depth units
+cor_length <- 30     # correlation length
+
+# SPDE parameters
+kappa <- 1 / cor_length
+tau   <- 1 / (2 * sqrt(pi * kappa) * sigma_w)
 
 Q <- tau^2*(kappa^4 * spde$c0 + 2 * kappa^2 * spde$g1 + spde$g2) # sparse precision
 
 plot(u * T_dive, y_mean, type = "l", lwd = 1, col = "steelblue",
      ylim = c(min(y_mean) * 1.2, 0),
-     xlab = "Time through dive",
-     ylab = "Depth (arbitrary units)",
-     main = "Mean dive profile from ODE with scaling s(T)")
+     xlab = "Time",
+     ylab = "Depth",
+     main = "Dive profile from with ODE mean and matérn GP residual")
 
 set.seed(123)
 for(i in 1:100) {
@@ -120,3 +126,7 @@ for(i in 1:100) {
 
 lines(u * T_dive, y_mean, type = "l", lwd = 3, col = "orange")
 
+
+# next step: turn this into the state-dependent process of an HMM
+# -> HMM on dive-by-dive scale
+# each observation is time series of depth profile
