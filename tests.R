@@ -115,7 +115,7 @@ plot(u * T_dive, y_mean, type = "l", lwd = 1, col = "steelblue",
      ylim = c(min(y_mean) * 1.2, 0),
      xlab = "Time",
      ylab = "Depth",
-     main = "Dive profile from with ODE mean and matérn GP residual")
+     main = "Dive profile with ODE mean and matérn GP residual")
 
 set.seed(123)
 for(i in 1:100) {
