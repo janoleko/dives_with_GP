@@ -1,7 +1,6 @@
 library(splines2)
 library(RTMB)
 library(fmesher)
-library(MASS)
 
 # ============================================================
 #  Gaussian process mean model based on a varying-coefficient ODE
